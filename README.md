@@ -11,10 +11,10 @@ Installation
 * Configure as desired (see below).
 * If this is the only git hook you are using:
   + `cd <your_repo>`
-  + `cd .git/hooks`
-  + `mv pre-commit pre-commit.pygithooks.bak`
-  + `ln -s /path/to/pygithooks/hooks/pre-commit pre-commit`
-* If you want to use these hooks along with other hooks, just add `/path/to/pygithooks/hooks/pre-commit || exit 1` to your existing `pre-commit`.
+  + `cd .git`
+  + `mv hooks hooks.pygithooks.bak`
+  + `ln -s /path/to/pygithooks/hooks hooks`
+* If you want to use these hooks along with other hooks, just add `/path/to/pygithooks/hooks/pre-commit.py || exit 1` to your existing `pre-commit`.
 
 Configuration
 -------------
