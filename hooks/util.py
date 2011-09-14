@@ -6,6 +6,7 @@ Shared pygithooks utils.
 import shlex
 import subprocess
 
+
 def run_command(command, shell=False):
     command_subprocess = subprocess.Popen(shlex.split(command),
                                           stdout=subprocess.PIPE,
@@ -14,6 +15,7 @@ def run_command(command, shell=False):
     command_out, command_err = command_subprocess.communicate()
     return_code = command_subprocess.returncode
     return command_out, command_err, return_code
+
 
 def get_config(config_key, as_bool=False, default=None):
     """

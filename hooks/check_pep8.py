@@ -8,6 +8,7 @@ import re
 
 from util import get_config, run_command
 
+
 class CheckPep8(object):
 
     def __init__(self):
@@ -16,7 +17,7 @@ class CheckPep8(object):
 
     def should_process_file(self, filename):
         if self.exclude_re:
-            return not self.exclude_re.match(filename) 
+            return not self.exclude_re.match(filename)
         return True
 
     def file_passes(self, temp_filename, original_filename=None):

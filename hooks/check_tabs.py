@@ -10,6 +10,7 @@ except ImportError:
 import tabnanny
 import tokenize
 
+
 class CheckTabs(object):
 
     def should_process_file(self, filename):

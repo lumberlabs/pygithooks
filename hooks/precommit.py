@@ -15,6 +15,7 @@ from check_indentation import CheckIndentation
 from check_tabs import CheckTabs
 from util import get_config, run_command
 
+
 def is_python_file(filename):
     """
     Returns True iff the file contains python code.
@@ -23,6 +24,7 @@ def is_python_file(filename):
     obvious what we should look for.
     """
     return os.path.splitext(filename)[1] == ".py"
+
 
 def changed_files():
     """
@@ -39,6 +41,7 @@ def changed_files():
     for filename in cleaned_filenames:
         if len(filename) > 0:
             yield filename
+
 
 def make_temp_copy(temp_dir_with_slash, filename):
     # TODO: Once all the hooks can take straight text rather than files, use git show instead:
@@ -57,6 +60,7 @@ def make_temp_copy(temp_dir_with_slash, filename):
 
     temp_filename = os.path.join(temp_dir_with_slash, filename)
     return temp_filename
+
 
 def main():
     hooks = [CheckTabs(), CheckIndentation()]

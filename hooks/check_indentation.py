@@ -16,11 +16,13 @@ import textwrap
 
 import reindent
 
+
 def clean_diff_line_for_python_bug_2142(diff_line):
     if diff_line.endswith("\n"):
         return diff_line
     else:
         return diff_line + "\n\\ No newline at end of file\n"
+
 
 def get_correct_indentation_diff(code, filename):
     """
@@ -48,6 +50,7 @@ def get_correct_indentation_diff(code, filename):
         return diff
     else:
         return None
+
 
 class CheckIndentation(object):
 
