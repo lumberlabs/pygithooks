@@ -9,8 +9,7 @@ Installation
   + `git clone git://github.com/lumberlabs/pygithooks.git`
 * Install submodules:
   + `cd pygithooks`
-  + `git submodule init`
-  + `git submodule update`
+  + `git submodule update --init`
 * Configure as desired (see below).
 * If this is the only git hook you are using:
   + `cd <your_repo>`
