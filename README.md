@@ -5,7 +5,10 @@ Installation
 ------------
 
 * Requires Python 2.6+. Not tested with Py3k.
+* Clone this repo:
+  + `git clone git://github.com/lumberlabs/pygithooks.git`
 * Install submodules:
+  + `cd pygithooks`
   + `git submodule init`
   + `git submodule update`
 * Configure as desired (see below).
