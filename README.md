@@ -4,7 +4,7 @@ Git pre-commit hooks for Python code formatting
 Installation
 ------------
 
-* Requires Python 2.7, or Python 2.6 + argparse.
+* Requires Python 2.6+. Not tested with Py3k.
 * Install submodules:
   + `git submodule init`
   + `git submodule update`
