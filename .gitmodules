@@ -1,0 +1,3 @@
+[submodule "hooks/pep8"]
+	path = hooks/pep8
+	url = git://github.com/jcrocholl/pep8.git
