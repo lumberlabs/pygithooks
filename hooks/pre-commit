@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# pygithooks
+script_name=`which $0`
+script_dir=`dirname $script_name`
+$script_dir/precommit.py || exit 1
