@@ -61,18 +61,17 @@ class CheckIndentation(object):
         if original_filename is None:
             original_filename = temp_filename
 
-        with open(temp_filename, "r") as temp_file:
-            code = temp_file.read()
+        code = open(temp_filename, "r").read()
 
         diff = get_correct_indentation_diff(code, original_filename)
         if diff:
             error_message = textwrap.dedent("""
-                                            # {f} has indentation problems. To fix them automatically,
+                                            # %(f)s has indentation problems. To fix them automatically,
                                             # pipe your `git commit` command's stderr through `patch -p0`, e.g.:
                                             # git commit 2>&1 | patch -p0
                                             # Don't forget to `git add` your changes after patching!
                                             #
-                                            """.format(f=original_filename))
+                                            """ % dict(f=original_filename))
             return False, error_message + diff
         else:
             return True, None

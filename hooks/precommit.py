@@ -45,7 +45,7 @@ def changed_files():
 
 def make_temp_copy(temp_dir_with_slash, filename):
     # TODO: Once all the hooks can take straight text rather than files, use git show instead:
-    # git_cat_command = "git show :{f}".format(f=filename)
+    # git_cat_command = "git show :%(f)s" % dict(f=filename)
     # git_out, git_err, git_rc = run_command(git_cat_command)
     # if git_err or git_rc:
     #     return None
@@ -55,7 +55,7 @@ def make_temp_copy(temp_dir_with_slash, filename):
     git_out, git_err, git_rc = run_command(git_checkout_command)
 
     if git_out or git_err or git_rc:
-        print("# Internal hook error:\n{out}\n{err}\n".format(out=git_out, err=git_err))
+        print("# Internal hook error:\n%(out)s\n%(err)s\n" % dict(out=git_out, err=git_err))
         sys.exit(1)
 
     temp_filename = os.path.join(temp_dir_with_slash, filename)
