@@ -5,6 +5,7 @@ Checks code for PEP8 indentation compliance.
 Distinct from check_pep8 because this can actually propose fixes, instead of just complaining.
 """
 
+from __future__ import with_statement   # Python 2.5 compatibility.
 import difflib
 import os
 try:
@@ -61,7 +62,8 @@ class CheckIndentation(object):
         if original_filename is None:
             original_filename = temp_filename
 
-        code = open(temp_filename, "r").read()
+        with open(temp_filename, "r") as temp_file:
+            code = temp_file.read()
 
         diff = get_correct_indentation_diff(code, original_filename)
         if diff:

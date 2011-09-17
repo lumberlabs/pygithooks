@@ -3,6 +3,7 @@
 Checks code for ambiguous tabs or other basic parsing issues.
 """
 
+from __future__ import with_statement   # Python 2.5 compatibility.
 try:
     import CStringIO as StringIO
 except ImportError:
@@ -20,7 +21,8 @@ class CheckTabs(object):
         if original_filename is None:
             original_filename = temp_filename
 
-        code = open(temp_filename, "r").read()
+        with open(temp_filename, "r") as temp_file:
+            code = temp_file.read()
 
         # note that this uses non-public elements from stdlib's tabnanny, because tabnanny
         # is (very frustratingly) written only to be used as a script, but using it that way
