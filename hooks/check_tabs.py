@@ -3,6 +3,7 @@
 Checks code for ambiguous tabs or other basic parsing issues.
 """
 
+from __future__ import with_statement   # Python 2.5 compatibility.
 try:
     import CStringIO as StringIO
 except ImportError:
@@ -29,12 +30,12 @@ class CheckTabs(object):
         code_buffer = StringIO.StringIO(code)
         try:
             tabnanny.process_tokens(tokenize.generate_tokens(code_buffer.readline))
-        except tokenize.TokenError as e:
-            return False, "# Could not parse code in {f}: {e}".format(e=e, f=original_filename)
-        except IndentationError as e:
-            return False, "# Indentation error in {f}: {e}".format(e=e, f=original_filename)
-        except tabnanny.NannyNag as e:
-            return False, "# Ambiguous tab in {f} at line {line}; line is '{contents}'.".format(line=e.get_lineno(),
-                                                                                                contents=e.get_line().rstrip(),
-                                                                                                f=original_filename)
+        except tokenize.TokenError, e:
+            return False, "# Could not parse code in %(f)s: %(e)s" % dict(e=e, f=original_filename)
+        except IndentationError, e:
+            return False, "# Indentation error in %(f)s: %(e)s" % dict(e=e, f=original_filename)
+        except tabnanny.NannyNag, e:
+            return False, "# Ambiguous tab in %(f)s at line %(line)s; line is '%(contents)s'." % dict(line=e.get_lineno(),
+                                                                                                      contents=e.get_line().rstrip(),
+                                                                                                      f=original_filename)
         return True, None

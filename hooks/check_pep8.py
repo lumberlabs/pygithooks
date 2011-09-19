@@ -26,17 +26,17 @@ class CheckPep8(object):
 
         pep8_path = os.path.join(os.path.dirname(__file__), "pep8", "pep8.py")
         pep8_ignore = get_config("pep8-ignore")
-        pep8_command = "{pep8_path} --ignore={ignore} -r {filename}".format(pep8_path=pep8_path,
-                                                                            ignore=pep8_ignore,
-                                                                            filename=temp_filename)
+        pep8_command = "%(pep8_path)s --ignore=%(ignore)s -r %(filename)s" % dict(pep8_path=pep8_path,
+                                                                                  ignore=pep8_ignore,
+                                                                                  filename=temp_filename)
         pep8_out, pep8_err, pep8_rc = run_command(pep8_command)
         if len(pep8_err) > 0:
-            return False, "# Internal error checking pep8:\n{pep8_err}\n".format(pep8_err=pep8_err)
+            return False, "# Internal error checking pep8:\n%(pep8_err)s\n" % dict(pep8_err=pep8_err)
 
         if len(pep8_out) > 0:
             assert temp_filename.endswith(original_filename)
             temp_dir = temp_filename[:-len(original_filename)]
-            error_message = "# pep8 problems with {f}:".format(f=original_filename)
+            error_message = "# pep8 problems with %(f)s:" % dict(f=original_filename)
             pep8_formatted = "\n".join(["#   " + line.replace(temp_dir, "") for line in pep8_out.splitlines()])
             return False, error_message + "\n" + pep8_formatted
 

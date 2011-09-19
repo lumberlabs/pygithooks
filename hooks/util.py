@@ -21,8 +21,8 @@ def get_config(config_key, as_bool=False, default=None):
     """
     Retrieves the value of pygithooks.<config_key> from git config, optionally forcing to be boolean.
     """
-    git_config_command = "git config --null {bool_flag} --get pygithooks.{config_key}".format(config_key=config_key,
-                                                                                              bool_flag="--bool" if as_bool else "")
+    git_config_command = "git config --null %(bool_flag)s --get pygithooks.%(config_key)s" % dict(config_key=config_key,
+                                                                                                  bool_flag="--bool" if as_bool else "")
     git_out, git_err, git_rc = run_command(git_config_command)
 
     if git_err or not git_out or git_rc:

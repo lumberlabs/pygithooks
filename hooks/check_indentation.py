@@ -5,6 +5,7 @@ Checks code for PEP8 indentation compliance.
 Distinct from check_pep8 because this can actually propose fixes, instead of just complaining.
 """
 
+from __future__ import with_statement   # Python 2.5 compatibility.
 import difflib
 import os
 try:
@@ -67,12 +68,12 @@ class CheckIndentation(object):
         diff = get_correct_indentation_diff(code, original_filename)
         if diff:
             error_message = textwrap.dedent("""
-                                            # {f} has indentation problems. To fix them automatically,
+                                            # %(f)s has indentation problems. To fix them automatically,
                                             # pipe your `git commit` command's stderr through `patch -p0`, e.g.:
                                             # git commit 2>&1 | patch -p0
                                             # Don't forget to `git add` your changes after patching!
                                             #
-                                            """.format(f=original_filename))
+                                            """ % dict(f=original_filename))
             return False, error_message + diff
         else:
             return True, None

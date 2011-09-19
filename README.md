@@ -4,7 +4,7 @@ Git pre-commit hooks for Python code formatting
 Installation
 ------------
 
-* Requires Python 2.6+. Not tested with Py3k.
+* Requires Python 2.5+. Not tested with Py3k.
 * Clone this repo:
   + `git clone git://github.com/lumberlabs/pygithooks.git`
 * Install submodules:
