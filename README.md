@@ -41,6 +41,12 @@ Supported keys:
   + regular expression for filenames to exclude from pep8 checks
   + sample value: `.*/migrations/.*`
   + default value: none
+* **incremental**
+  + in incremental mode, if a file failed the hooks *before* this commit, allow it through unchecked.
+    This is useful in a large codebase that isn't already well-formatted: The hooks make sure that
+    files never *become* badly formatted, but don't block development on existing badly formatted files.
+  + sample value: `true`
+  + default value: `false`
 
 Contributing
 ------------

@@ -17,6 +17,34 @@ def run_command(command, shell=False):
     return command_out, command_err, return_code
 
 
+def run_piped_commands(commands, shell=False):
+    """
+    Run multiple commands, chaining stdout to stdin a la shell pipelining.
+
+    >>> run_piped_commands(["ls -l util.py", "wc -l"]).strip()
+    '1'
+    """
+    if not commands:
+        raise ValueError("run_piped_commands requires at least one command")
+
+    stdin = None
+    for command in commands:
+        command_subprocess = subprocess.Popen(shlex.split(command),
+                                              stdin=stdin,
+                                              stdout=subprocess.PIPE,
+                                              stderr=subprocess.PIPE,
+                                              shell=shell)
+        stdin = command_subprocess.stdout
+        # The sample code at http://docs.python.org/library/subprocess.html
+        # seems to indicate the following line is needed, but it breaks things
+        # for me...
+        # command_subprocess.stdout.close()  # Allow prior process to receive a SIGPIPE if this process exits
+
+    command_out, command_err = command_subprocess.communicate()
+    return_code = command_subprocess.returncode
+    return command_out, command_err, return_code
+
+
 def get_config(config_key, as_bool=False, default=None):
     """
     Retrieves the value of pygithooks.<config_key> from git config, optionally forcing to be boolean.

@@ -13,7 +13,7 @@ import tempfile
 from check_pep8 import CheckPep8
 from check_indentation import CheckIndentation
 from check_tabs import CheckTabs
-from util import get_config, run_command
+from util import get_config, run_command, run_piped_commands
 
 
 def is_python_file(filename):
@@ -28,7 +28,7 @@ def is_python_file(filename):
 
 def changed_files():
     """
-    Return a generator of filenames changed in this commit. Excluded files that were just deleted.
+    Return a generator of filenames changed in this commit. Excludes files that were just deleted.
     """
     git_diff_command = "git diff-index --cached --name-only --diff-filter=ACMRTUXB HEAD"
     git_out, git_err, git_rc = run_command(git_diff_command)
@@ -43,7 +43,10 @@ def changed_files():
             yield filename
 
 
-def make_temp_copy(temp_dir_with_slash, filename):
+def make_temp_copy(temp_dir_with_slash, filename, head=False):
+    """
+    Create a temporary copy of a file, either from the index or from HEAD.
+    """
     # TODO: Once all the hooks can take straight text rather than files, use git show instead:
     # git_cat_command = "git show :%(f)s" % dict(f=filename)
     # git_out, git_err, git_rc = run_command(git_cat_command)
@@ -51,14 +54,22 @@ def make_temp_copy(temp_dir_with_slash, filename):
     #     return None
     # return git_out # contents of <filename> in the index
 
-    git_checkout_command = "git checkout-index --prefix=%s -- %s" % (temp_dir_with_slash, filename)
-    git_out, git_err, git_rc = run_command(git_checkout_command)
+    temp_filename = os.path.join(temp_dir_with_slash, filename)
+    if os.path.isfile(temp_filename):
+        os.remove(temp_filename)
+
+    if head:
+        git_archive_command = "git archive HEAD -- %s" % (filename, )
+        untar_command = "tar -x -C %s" % (temp_dir_with_slash, )
+        git_out, git_err, git_rc = run_piped_commands([git_archive_command, untar_command])
+    else:
+        git_checkout_command = "git checkout-index --prefix=%s -- %s" % (temp_dir_with_slash, filename)
+        git_out, git_err, git_rc = run_command(git_checkout_command)
 
     if git_out or git_err or git_rc:
         print("# Internal hook error:\n%(out)s\n%(err)s\n" % dict(out=git_out, err=git_err))
         sys.exit(1)
 
-    temp_filename = os.path.join(temp_dir_with_slash, filename)
     return temp_filename
 
 
@@ -68,6 +79,8 @@ def main():
     should_check_pep8 = get_config("check-pep8", as_bool=True, default=True)
     if should_check_pep8:
         hooks += [CheckPep8()]
+
+    incremental = get_config("incremental", as_bool=True, default=False)
 
     # create temp directory for getting copies of files from staging.
     # TODO: Make all the hooks operate on strings instead of files, and get rid of this.
@@ -82,8 +95,23 @@ def main():
                 continue
 
             relevant_hooks = [hook for hook in hooks if hook.should_process_file(filename)]
+            if not relevant_hooks:
+                continue
 
-            if relevant_hooks:
+            should_check_file = True
+            if incremental:
+                head_temp_filename = make_temp_copy(temp_dir_with_slash, filename, head=True)
+                if os.path.isfile(head_temp_filename):
+                    # This is not a newly added file, so check whether it used to fail the hooks.
+                    for relevant_hook in relevant_hooks:
+                        head_passes, unused_error_message = relevant_hook.file_passes(head_temp_filename, original_filename=filename)
+                        if not head_passes:
+                            # Incremental checking was requested, and current HEAD doesn't pass,
+                            # so don't bother checking this file.
+                            should_check_file = False
+                            break
+
+            if should_check_file:
                 temp_filename = make_temp_copy(temp_dir_with_slash, filename)
                 for relevant_hook in relevant_hooks:
                     passes, error_message = relevant_hook.file_passes(temp_filename, original_filename=filename)
