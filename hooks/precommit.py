@@ -5,6 +5,7 @@ precommit.py
 Runner of python-based precommit hooks.
 """
 
+import copy
 import os
 import shutil
 import sys
@@ -98,27 +99,29 @@ def main():
             if not relevant_hooks:
                 continue
 
-            should_check_file = True
             if incremental:
                 head_temp_filename = make_temp_copy(temp_dir_with_slash, filename, head=True)
+                incremental_hooks = copy.copy(relevant_hooks)
                 if os.path.isfile(head_temp_filename):
                     # This is not a newly added file, so check whether it used to fail the hooks.
                     for relevant_hook in relevant_hooks:
                         head_passes, unused_error_message = relevant_hook.file_passes(head_temp_filename, original_filename=filename)
                         if not head_passes:
                             # Incremental checking was requested, and current HEAD doesn't pass,
-                            # so don't bother checking this file.
-                            should_check_file = False
-                            break
+                            # so don't bother checking this file with this hook.
+                            incremental_hooks.remove(relevant_hook)
+                relevant_hooks = incremental_hooks
 
-            if should_check_file:
-                temp_filename = make_temp_copy(temp_dir_with_slash, filename)
-                for relevant_hook in relevant_hooks:
-                    passes, error_message = relevant_hook.file_passes(temp_filename, original_filename=filename)
-                    if not passes:
-                        failure_encountered = True
-                        print(error_message)
-                        break
+            if not relevant_hooks:
+                continue
+
+            temp_filename = make_temp_copy(temp_dir_with_slash, filename)
+            for relevant_hook in relevant_hooks:
+                passes, error_message = relevant_hook.file_passes(temp_filename, original_filename=filename)
+                if not passes:
+                    failure_encountered = True
+                    print(error_message)
+                    break
     finally:
         shutil.rmtree(temp_dir, True)
 
