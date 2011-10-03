@@ -51,10 +51,12 @@ recurse = 0
 dryrun = 0
 makebackup = True
 
+
 def usage(msg=None):
     if msg is not None:
         print >> sys.stderr, msg
     print >> sys.stderr, __doc__
+
 
 def errprint(*args):
     sep = ""
@@ -62,6 +64,7 @@ def errprint(*args):
         sys.stderr.write(sep + str(arg))
         sep = " "
     sys.stderr.write("\n")
+
 
 def main():
     import getopt
@@ -91,6 +94,7 @@ def main():
         return
     for arg in args:
         check(arg)
+
 
 def check(file):
     if os.path.isdir(file) and not os.path.islink(file):
@@ -138,6 +142,7 @@ def check(file):
             print "unchanged."
         return False
 
+
 def _rstrip(line, JUNK='\n \t'):
     """Return line stripped of trailing spaces, tabs, newlines.
 
@@ -150,6 +155,7 @@ def _rstrip(line, JUNK='\n \t'):
     while i > 0 and line[i - 1] in JUNK:
         i -= 1
     return line[:i]
+
 
 class Reindenter:
 
@@ -294,12 +300,14 @@ class Reindenter:
             if line:   # not endmarker
                 self.stats.append((sline, self.level))
 
+
 # Count number of leading blanks.
 def getlspace(line):
     i, n = 0, len(line)
     while i < n and line[i] == " ":
         i += 1
     return i
+
 
 if __name__ == '__main__':
     main()

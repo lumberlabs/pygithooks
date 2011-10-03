@@ -45,7 +45,7 @@ Supported keys:
 Contributing
 ------------
 * Yes, please. Fork and send a pull request!
-* Code formatting note: We ignore E302 ("expected 2 blank lines, found 1") because `reindent.py` violates it, and E501 (line too long).
+* Code formatting note: We ignore E501 (line too long).
 
 License
 -------
