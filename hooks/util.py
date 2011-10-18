@@ -54,7 +54,7 @@ def get_config(config_key, as_bool=False, default=None):
     git_out, git_err, git_rc = run_command(git_config_command)
 
     if git_err:
-        raise Exception("Git returned an exception when we tried to get config value from it", git_err)
+        raise RuntimeException("git config command returned an error", git_config_command, git_err)
     if not git_out or git_rc:
         return default
 
