@@ -21,8 +21,10 @@ def run_piped_commands(commands, shell=False):
     """
     Run multiple commands, chaining stdout to stdin a la shell pipelining.
 
-    >>> run_piped_commands(["ls -l util.py", "wc -l"]).strip()
+    >>> run_piped_commands(["ls -l util.py", "wc -l"])[0].strip()
     '1'
+    >>> run_piped_commands(["ls -l util.py", "wc -l"])[1:]
+    ('', 0)
     """
     if not commands:
         raise ValueError("run_piped_commands requires at least one command")
