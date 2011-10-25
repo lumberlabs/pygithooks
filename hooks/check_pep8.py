@@ -12,22 +12,25 @@ from util import get_config, run_command
 class CheckPep8(object):
 
     def __init__(self):
-        exclude = get_config("pep8-exclude")
-        self.exclude_re = re.compile(exclude) if exclude else None
+        self.exclude = get_config("pep8-exclude")
+        self.exclude_re = re.compile(self.exclude) if self.exclude else None
+        self.pep8_ignore = get_config("pep8-ignore")
 
     def should_process_file(self, filename):
         if self.exclude_re:
             return not self.exclude_re.match(filename)
         return True
 
+    def __str__(self):
+        return "<CheckPep8: ignore %r, exclude %r>" % (self.pep8_ignore, self.exclude)
+
     def file_passes(self, temp_filename, original_filename=None):
         if original_filename is None:
             original_filename = temp_filename
 
         pep8_path = os.path.join(os.path.dirname(__file__), "pep8", "pep8.py")
-        pep8_ignore = get_config("pep8-ignore")
         pep8_command = "%(pep8_path)s --ignore=%(ignore)s -r %(filename)s" % dict(pep8_path=pep8_path,
-                                                                                  ignore=pep8_ignore,
+                                                                                  ignore=self.pep8_ignore,
                                                                                   filename=temp_filename)
         pep8_out, pep8_err, pep8_rc = run_command(pep8_command)
         if len(pep8_err) > 0:

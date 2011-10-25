@@ -47,6 +47,11 @@ Supported keys:
     files never *become* badly formatted, but don't block development on existing badly formatted files.
   + sample value: `true`
   + default value: `false`
+* **debug**
+  + print some debug goo during processing. Handy for figuring out why pygithooks is not behaving as you expect.
+    Don't leave this on. :)
+  + sample value: `true`
+  + default value: `false`
 
 Contributing
 ------------

@@ -77,11 +77,16 @@ def make_temp_copy(temp_dir_with_slash, filename, head=False):
 def main():
     hooks = [CheckTabs(), CheckIndentation()]
 
+    debug = get_config("debug", as_bool=True, default=False)
+
     should_check_pep8 = get_config("check-pep8", as_bool=True, default=True)
     if should_check_pep8:
         hooks += [CheckPep8()]
 
     incremental = get_config("incremental", as_bool=True, default=False)
+
+    if debug:
+        print "Starting hooks, with pep8 %s, incremental %s, hooks [%s]" % (should_check_pep8, incremental, ", ".join(map(str, hooks)))
 
     # create temp directory for getting copies of files from staging.
     # TODO: Make all the hooks operate on strings instead of files, and get rid of this.
@@ -92,11 +97,18 @@ def main():
 
     try:
         for filename in changed_files():
+            if debug:
+                print "Examining %s" % filename
+
             if not is_python_file(filename):
+                if debug:
+                    print "Skipping %s, not a python file" % filename
                 continue
 
             relevant_hooks = [hook for hook in hooks if hook.should_process_file(filename)]
             if not relevant_hooks:
+                if debug:
+                    print "Skipping %s, no relevant hooks" % filename
                 continue
 
             if incremental:
@@ -113,6 +125,8 @@ def main():
                 relevant_hooks = incremental_hooks
 
             if not relevant_hooks:
+                if debug:
+                    print "Skipping %s, no relevant hooks (after incremental check)" % filename
                 continue
 
             temp_filename = make_temp_copy(temp_dir_with_slash, filename)

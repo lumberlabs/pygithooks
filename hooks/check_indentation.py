@@ -58,6 +58,9 @@ class CheckIndentation(object):
     def should_process_file(self, filename):
         return True
 
+    def __str__(self):
+        return "<CheckIndentation>"
+
     def file_passes(self, temp_filename, original_filename=None):
         if original_filename is None:
             original_filename = temp_filename
