@@ -122,6 +122,7 @@ def main():
                             # Incremental checking was requested, and current HEAD doesn't pass,
                             # so don't bother checking this file with this hook.
                             incremental_hooks.remove(relevant_hook)
+                            print "Hook %s failed on current HEAD for file %s"%(relevant_hook, filename)
                 relevant_hooks = incremental_hooks
 
             if not relevant_hooks:
