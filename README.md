@@ -48,8 +48,8 @@ Supported keys:
   + sample value: `true`
   + default value: `false`
 * **incremental.verbose**
-  + if true and incremental is enabled, we print the filename that failed some tests.
-    This is useful to know witch file don't respect the convention
+  + Print all filenames that were allowed through only because of the `incremental` flag. (Does nothing
+    if `incremental` is not enabled.) This is useful for knowing which files should (eventually) be cleaned up.
   + sample value: `true`
   + default value: `false`
 * **debug**
