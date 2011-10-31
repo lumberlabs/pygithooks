@@ -84,6 +84,8 @@ def main():
         hooks += [CheckPep8()]
 
     incremental = get_config("incremental", as_bool=True, default=False)
+    incremental_verbose = get_config("incremental.verbose", as_bool=True,
+                                     default=False)
 
     if debug:
         print "Starting hooks, with pep8 %s, incremental %s, hooks [%s]" % (should_check_pep8, incremental, ", ".join(map(str, hooks)))
@@ -122,6 +124,8 @@ def main():
                             # Incremental checking was requested, and current HEAD doesn't pass,
                             # so don't bother checking this file with this hook.
                             incremental_hooks.remove(relevant_hook)
+                            if incremental_verbose:
+                                print "Hook %s failed on current HEAD for file %s"%(relevant_hook, filename)
                 relevant_hooks = incremental_hooks
 
             if not relevant_hooks:
