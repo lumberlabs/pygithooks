@@ -27,11 +27,15 @@ def is_python_file(filename):
     return os.path.splitext(filename)[1] == ".py"
 
 
-def changed_files():
+def changed_files(include_added_files=True):
     """
     Return a generator of filenames changed in this commit. Excludes files that were just deleted.
     """
-    git_diff_command = "git diff-index --cached --name-only --diff-filter=ACMRTUXB HEAD"
+    diff_filter = "CMRTUXB"
+    if include_added_files:
+        diff_filter += "A"
+
+    git_diff_command = "git diff-index --cached --name-only --diff-filter=%s HEAD" % diff_filter
     git_out, git_err, git_rc = run_command(git_diff_command)
 
     if git_err or git_rc:
@@ -62,6 +66,7 @@ def make_temp_copy(temp_dir_with_slash, filename, head=False):
     if head:
         git_archive_command = "git archive HEAD -- %s" % (filename, )
         untar_command = "tar -x -C %s" % (temp_dir_with_slash, )
+        print git_archive_command, untar_command
         git_out, git_err, git_rc = run_piped_commands([git_archive_command, untar_command])
     else:
         git_checkout_command = "git checkout-index --prefix=%s -- %s" % (temp_dir_with_slash, filename)
@@ -98,6 +103,12 @@ def main():
     failure_encountered = False
 
     try:
+        if incremental:
+            # Incremental checking requires checking the previous version of a
+            # file for errors, but if the file was added, we can't do that.
+            # Get a list of non-added changed files here to check against.
+            modified_files = frozenset(changed_files(include_added_files=False))
+
         for filename in changed_files():
             if debug:
                 print "Examining %s" % filename
@@ -113,7 +124,7 @@ def main():
                     print "Skipping %s, no relevant hooks" % filename
                 continue
 
-            if incremental:
+            if incremental and filename in modified_files:
                 head_temp_filename = make_temp_copy(temp_dir_with_slash, filename, head=True)
                 incremental_hooks = copy.copy(relevant_hooks)
                 if os.path.isfile(head_temp_filename):
