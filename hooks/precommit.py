@@ -66,7 +66,6 @@ def make_temp_copy(temp_dir_with_slash, filename, head=False):
     if head:
         git_archive_command = "git archive HEAD -- %s" % (filename, )
         untar_command = "tar -x -C %s" % (temp_dir_with_slash, )
-        print git_archive_command, untar_command
         git_out, git_err, git_rc = run_piped_commands([git_archive_command, untar_command])
     else:
         git_checkout_command = "git checkout-index --prefix=%s -- %s" % (temp_dir_with_slash, filename)
