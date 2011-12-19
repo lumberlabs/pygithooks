@@ -49,32 +49,31 @@ def changed_files(include_added_files=True):
             yield filename
 
 
-def make_temp_copy(temp_dir_with_slash, filename, head=False):
+def make_temp_copy(temp_dir_with_slash, filename):
     """
-    Create a temporary copy of a file, either from the index or from HEAD.
+    Create a temporary copy of a file from the index.
     """
-    # TODO: Once all the hooks can take straight text rather than files, use git show instead:
-    # git_cat_command = "git show :%(f)s" % dict(f=filename)
-    # git_out, git_err, git_rc = run_command(git_cat_command)
-    # if git_err or git_rc:
-    #     return None
-    # return git_out # contents of <filename> in the index
+    # TODO: Once all the hooks can take straight text rather than files, just return text.
 
     temp_filename = os.path.join(temp_dir_with_slash, filename)
     if os.path.isfile(temp_filename):
         os.remove(temp_filename)
 
-    if head:
-        git_archive_command = "git archive HEAD -- %s" % (filename, )
-        untar_command = "tar -x -C %s" % (temp_dir_with_slash, )
-        git_out, git_err, git_rc = run_piped_commands([git_archive_command, untar_command])
-    else:
-        git_checkout_command = "git checkout-index --prefix=%s -- %s" % (temp_dir_with_slash, filename)
-        git_out, git_err, git_rc = run_command(git_checkout_command)
+    git_cat_command = "git show :%(f)s" % dict(f=filename)
+    git_out, git_err, git_rc = run_command(git_cat_command)
 
-    if git_out or git_err or git_rc:
+    if git_err or git_rc:
         print("# Internal hook error:\n%(out)s\n%(err)s\n" % dict(out=git_out, err=git_err))
         sys.exit(1)
+
+    try:
+        os.makedirs(os.path.dirname(temp_filename))
+    except OSError:
+        # dir already exists
+        pass
+
+    with open(temp_filename, "wb") as temp_outfile:
+        temp_outfile.write(git_out)
 
     return temp_filename
 
@@ -126,7 +125,7 @@ def main():
             continue
 
         if incremental and filename in modified_files:
-            head_temp_filename = make_temp_copy(temp_dir_with_slash, filename, head=True)
+            head_temp_filename = make_temp_copy(temp_dir_with_slash, filename)
             incremental_hooks = copy.copy(relevant_hooks)
             if os.path.isfile(head_temp_filename):
                 # This is not a newly added file, so check whether it used to fail the hooks.
