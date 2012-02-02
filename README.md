@@ -5,11 +5,8 @@ Installation
 ------------
 
 * Requires Python 2.5+. Not tested with Py3k.
-* Clone this repo:
-  + `git clone git://github.com/lumberlabs/pygithooks.git`
-* Install submodules:
-  + `cd pygithooks`
-  + `git submodule update --init`
+* Clone this repo & submodules:
+  + `git clone git://github.com/lumberlabs/pygithooks.git --recursive`
 * Configure as desired (see below).
 * If this is the only git hook you are using:
   + `cd <your_repo>`
