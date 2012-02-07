@@ -119,6 +119,8 @@ def main():
             continue
 
         relevant_hooks = [hook for hook in hooks if hook.should_process_file(filename)]
+	if debug:
+            print "relevant hooks are: ", relevant_hooks
         if not relevant_hooks:
             if debug:
                 print "Skipping %s, no relevant hooks" % filename
